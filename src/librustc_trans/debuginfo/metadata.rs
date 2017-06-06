@@ -486,7 +486,6 @@ pub fn type_metadata<'a, 'tcx>(cx: &CrateContext<'a, 'tcx>,
 
     debug!("type_metadata: {:?}", t);
 
-    let sty = &t.sty;
     let ptr_metadata = |ty: Ty<'tcx>| {
         match ty.sty {
             ty::TySlice(typ) => {
@@ -516,7 +515,7 @@ pub fn type_metadata<'a, 'tcx>(cx: &CrateContext<'a, 'tcx>,
         }
     };
 
-    let MetadataCreationResult { metadata, already_stored_in_typemap } = match *sty {
+    let MetadataCreationResult { metadata, already_stored_in_typemap } = match t.sty {
         ty::TyNever    |
         ty::TyBool     |
         ty::TyChar     |
@@ -555,10 +554,10 @@ pub fn type_metadata<'a, 'tcx>(cx: &CrateContext<'a, 'tcx>,
                 Err(metadata) => return metadata,
             }
         }
-        ty::TyFnDef(.., sig) | ty::TyFnPtr(sig) => {
+        ty::TyFnDef(..) | ty::TyFnPtr(_) => {
             let fn_metadata = subroutine_type_metadata(cx,
                                                        unique_type_id,
-                                                       sig,
+                                                       t.fn_sig(cx.tcx()),
                                                        usage_site_span).metadata;
             match debug_context(cx).type_map
                                    .borrow()
@@ -608,7 +607,7 @@ pub fn type_metadata<'a, 'tcx>(cx: &CrateContext<'a, 'tcx>,
                                    usage_site_span).finalize(cx)
         }
         _ => {
-            bug!("debuginfo: unexpected type in type_metadata: {:?}", sty)
+            bug!("debuginfo: unexpected type in type_metadata: {:?}", t)
         }
     };
 

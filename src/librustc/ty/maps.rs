@@ -845,9 +845,8 @@ define_maps! { <'tcx>
     /// expression defining the closure.
     [] closure_kind: ItemSignature(DefId) -> ty::ClosureKind,
 
-    /// Records the type of each closure. The def ID is the ID of the
-    /// expression defining the closure.
-    [] closure_type: ItemSignature(DefId) -> ty::PolyFnSig<'tcx>,
+    /// Records the signature of functions and closures.
+    [] fn_sig: ItemSignature(DefId) -> ty::PolyFnSig<'tcx>,
 
     /// Caches CoerceUnsized kinds for impls on custom types.
     [] coerce_unsized_info: ItemSignature(DefId)
